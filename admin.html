@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Адмін панель - Страшний чат</title>
+  <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>👻 Адмін панель страшного чату</h1>
+      <p>Повне керування персонажами, повідомленнями та налаштуваннями чату</p>
+    </div>
+
+    <div class="sidebar">
+      <!-- Персонажі -->
+      <div class="section">
+        <h3>🎭 Персонажі</h3>
+        <div class="characters-list" id="charactersList"></div>
+        <button class="btn btn-primary" onclick="addNewCharacter()">+ Додати персонажа</button>
+      </div>
+
+      <!-- Налаштування персонажа -->
+      <div class="section">
+        <h3>⚙️ Редагувати персонажа</h3>
+        <div class="form-group">
+          <label>Ім'я</label>
+          <input type="text" class="input" id="charName" placeholder="Ім'я персонажа">
+        </div>
+        <div class="form-group">
+          <label>Аватар</label>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" class="input" id="charAvatar" placeholder="👻 або URL фото" style="flex: 1;">
+            <label for="avatarFile" class="file-upload-btn">
+              📷 Фото
+            </label>
+          </div>
+          <input type="file" id="avatarFile" class="file-input" accept="image/*" onchange="handleAvatarUpload(event)">
+          <div class="avatar-preview" id="avatarPreview">👻</div>
+        </div>
+        <div class="form-group">
+          <label>Колір</label>
+          <input type="color" class="color-input" id="charColor" value="#ff4757">
+        </div>
+        <div class="form-group">
+          <label>Тип</label>
+          <select class="select" id="charType">
+            <option value="ghost">Привид</option>
+            <option value="demon">Демон</option>
+            <option value="spirit">Дух</option>
+            <option value="entity">Сутність</option>
+            <option value="other">Інше</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-success" onclick="saveCharacter()">💾 Зберегти</button>
+          <button class="btn btn-danger" onclick="deleteCharacter()">🗑️ Видалити</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-area">
+      <h3>💬 Повідомлення</h3>
+      
+      <!-- Швидкі відповіді -->
+      <div class="quick-responses">
+        <span class="quick-response" onclick="insertQuickResponse('Хто тут?')">Хто тут?</span>
+        <span class="quick-response" onclick="insertQuickResponse('Я чую тебе...')">Я чую тебе...</span>
+        <span class="quick-response" onclick="insertQuickResponse('Не йди...')">Не йди...</span>
+        <span class="quick-response" onclick="insertQuickResponse('Холодно... так холодно...')">Холодно...</span>
+        <span class="quick-response" onclick="insertQuickResponse('Допоможи мені...')">Допоможи мені...</span>
+      </div>
+
+      <div class="messages-container" id="messagesContainer"></div>
+
+      <div class="message-input-container">
+        <div style="flex: 1;">
+          <!-- Медіа завантаження -->
+          <div class="media-upload">
+            <label for="photoFile" class="file-upload-btn">
+              📷 Фото
+            </label>
+            <label for="videoFile" class="file-upload-btn">
+              🎬 Відео
+            </label>
+            <div id="mediaPreview"></div>
+          </div>
+          
+          <textarea 
+            class="textarea message-textarea" 
+            id="adminMessage" 
+            placeholder="Напишіть відповідь від імені обраного персонажа..."
+          ></textarea>
+          
+          <!-- Відповідь на повідомлення -->
+          <div id="replyPreview" style="display: none; background: rgba(60, 60, 60, 0.8); padding: 8px; border-radius: 6px; margin-top: 8px; border-left: 3px solid #007aff;">
+            <div style="font-size: 12px; color: #007aff; margin-bottom: 4px;" id="replyToUser"></div>
+            <div style="font-size: 13px; color: #ccc;" id="replyToText"></div>
+            <button onclick="cancelReply()" style="position: absolute; right: 8px; top: 8px; background: none; border: none; color: #999; cursor: pointer;">×</button>
+          </div>
+        </div>
+        
+        <div class="message-actions">
+          <button class="btn btn-success" onclick="sendMessage()">📤 Надіслати</button>
+          <button class="btn btn-secondary" onclick="simulateTyping()">⌨️ Друкує...</button>
+          <button class="btn btn-danger" onclick="clearChat()">🗑️ Очистити</button>
+        </div>
+      </div>
+      
+      <input type="file" id="photoFile" class="file-input" accept="image/*" onchange="handleMediaUpload(event, 'photo')">
+      <input type="file" id="videoFile" class="file-input" accept="video/*" onchange="handleMediaUpload(event, 'video')">
+    </div>
+
+    <div class="right-panel">
+      <!-- Налаштування чату -->
+      <div class="section">
+        <h3>🎨 Налаштування чату</h3>
+        <div class="form-group">
+          <label>Назва чату</label>
+          <input type="text" class="input" id="chatTitle" placeholder="Мертві душі">
+        </div>
+        <div class="form-group">
+          <label>Фон чату</label>
+          <select class="select" id="backgroundSelect" onchange="updateBackground()">
+            <option value="gradient1">Темний градієнт</option>
+            <option value="gradient2">Червоно-чорний</option>
+            <option value="gradient3">Фіолетово-чорний</option>
+            <option value="gradient4">Зелено-чорний</option>
+            <option value="gradient5">Синьо-чорний</option>
+            <option value="custom">Власне фото</option>
+          </select>
+          <div style="margin-top: 8px;">
+            <label for="backgroundFile" class="file-upload-btn" id="backgroundUploadBtn" style="display: none;">
+              🖼️ Завантажити фон
+            </label>
+            <input type="file" id="backgroundFile" class="file-input" accept="image/*" onchange="handleBackgroundUpload(event)">
+          </div>
+          <div class="background-preview" id="backgroundPreview"></div>
+        </div>
+        
+        <!-- Кольорова схема -->
+        <div class="form-group">
+          <label>Кольорова схема</label>
+          <select class="select" id="colorScheme" onchange="updateColorScheme()">
+            <option value="default">За замовчуванням</option>
+            <option value="dark">Темна</option>
+            <option value="blue">Синя</option>
+            <option value="green">Зелена</option>
+            <option value="red">Червона</option>
+            <option value="purple">Фіолетова</option>
+            <option value="custom">Власна</option>
+          </select>
+          <div id="customColors" style="display: none; margin-top: 10px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div>
+                <label style="font-size: 12px;">Фон</label>
+                <input type="color" class="color-input" id="customBgColor" value="#0f1419">
+              </div>
+              <div>
+                <label style="font-size: 12px;">Акцент</label>
+                <input type="color" class="color-input" id="customAccentColor" value="#2b5278">
+              </div>
+            </div>
+          </div>
+          <div class="color-scheme-preview" id="colorPreview"></div>
+        </div>
+        
+        <button class="btn btn-primary" onclick="saveSettings()">💾 Зберегти налаштування</button>
+      </div>
+
+      <!-- Керування користувачами -->
+      <div class="section">
+        <h3>👥 Користувачі</h3>
+        <div id="usersList">
+          <div class="user-item">
+            <div>
+              <div style="font-weight: 500;">Користувач #1</div>
+              <div class="user-status">
+                <div class="status-indicator online"></div>
+                <span>Онлайн</span>
+              </div>
+            </div>
+            <div>
+              <button class="btn btn-warning btn-sm" onclick="toggleMute('user1')">🔇 Заглушити</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Статистика -->
+      <div class="section">
+        <h3>📊 Статистика</h3>
+        <div style="font-size: 14px; line-height: 1.6;">
+          <div>Повідомлень: <span id="messagesCount">0</span></div>
+          <div>Персонажів: <span id="charactersCount">0</span></div>
+          <div>Користувачів онлайн: <span id="onlineCount">0</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальне вікно редагування повідомлення -->
+  <div class="edit-message-overlay" id="editMessageOverlay">
+    <div class="edit-message-modal">
+      <div class="modal-header">
+        <h3>✏️ Редагувати повідомлення</h3>
+        <button class="modal-close" onclick="closeEditModal()">×</button>
+      </div>
+      <div class="form-group">
+        <label>Текст повідомлення</label>
+        <textarea class="textarea" id="editMessageText" rows="4"></textarea>
+      </div>
+      <div style="display: flex; gap: 10px; justify-content: flex-end;">
+        <button class="btn btn-secondary" onclick="closeEditModal()">Скасувати</button>
+        <button class="btn btn-success" onclick="saveEditedMessage()">💾 Зберегти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="scripts/firebase-config.js"></script>
+  <script src="scripts/admin-core.js"></script>
+  <script src="scripts/admin-characters.js"></script>
+  <script src="scripts/admin-messages.js"></script>
+  <script src="scripts/admin-settings.js"></script>
+  <script src="scripts/admin-ui.js"></script>
+</body>
+</html>

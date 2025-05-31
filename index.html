@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Чат з духами</title>
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/responsive.css">
+</head>
+<body>
+  <div class="header">
+    <div class="chat-avatar" id="chatAvatar">👻</div>
+    <div class="chat-info">
+      <h2 id="chatTitle">Мертві душі</h2>
+      <div class="status">
+        <span id="onlineStatus">онлайн</span>
+        <div class="online-indicator"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-container">
+    <div class="messages-area" id="messagesArea"></div>
+    <div class="typing-indicator" id="typingIndicator">
+      <span class="typing-dots">хтось друкує</span>
+    </div>
+    <div class="input-area">
+      <div class="reply-preview" id="replyPreview">
+        <div class="reply-sender" id="replySender"></div>
+        <div class="reply-text" id="replyText"></div>
+        <button class="reply-close" onclick="cancelReply()">×</button>
+      </div>
+      <div class="input-container">
+        <button class="attachment-btn" onclick="toggleAttachmentMenu()">📎</button>
+        <div class="attachment-menu" id="attachmentMenu">
+          <label class="attachment-option" for="photoInput">
+            <div class="icon">📷</div>
+            <span>Фото</span>
+          </label>
+          <label class="attachment-option" for="videoInput">
+            <div class="icon">🎥</div>
+            <span>Відео</span>
+          </label>
+        </div>
+        <textarea 
+          class="message-input" 
+          id="messageInput" 
+          placeholder="Напишіть повідомлення..."
+          rows="1"
+        ></textarea>
+        <button class="send-button" id="sendButton">
+          ➤
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="muted-notice" id="mutedNotice">
+    Ви заблоковані адміністратором
+  </div>
+
+  <input type="file" id="photoInput" class="file-input" accept="image/*">
+  <input type="file" id="videoInput" class="file-input" accept="video/*">
+
+  <!-- Scripts -->
+  <script type="module" src="scripts/main.js"></script>
+</body>
+</html>
